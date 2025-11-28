@@ -27,9 +27,9 @@ public class OrderService {
         newOrder.set(new ClOrdID(UUID.randomUUID().toString())); // CLOrdID = Client Order ID
         newOrder.set(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PUBLIC_BROKER_INTERVENTION_OK));
         newOrder.set(new Symbol(orderDTO.symbol()));
-        newOrder.set(new Side(Side.BUY));
+        newOrder.set(calculateSideType(orderDTO.side()));
         newOrder.set(new TransactTime(LocalDateTime.now()));
-        newOrder.set(new OrdType(OrdType.MARKET));
+        newOrder.set(calculateOrderType(orderDTO.orderType()));
         newOrder.set(new OrderQty(orderDTO.quantity()));
 
         // IMPORTANT: Only 1 session is defined in this project.
@@ -37,5 +37,23 @@ public class OrderService {
         log.info("Sending order");
         SessionID sessionID = initiator.getSessions().get(0);
         quickFixJTemplate.send(newOrder, sessionID);
+    }
+
+    private Side calculateSideType(String rawSide) {
+        rawSide = rawSide.toUpperCase();
+        return switch (rawSide) {
+            case "BUY" -> new Side(Side.BUY);
+            case "SELL" -> new Side(Side.SELL);
+            default -> throw new IllegalArgumentException(String.format("[%s] is not a valid Side Type", rawSide));
+        };
+    }
+
+    private OrdType calculateOrderType(String rawOrderType) {
+        rawOrderType = rawOrderType.toUpperCase();
+        return switch (rawOrderType) {
+            case "MARKET" -> new OrdType(OrdType.MARKET);
+            case "LIMIT" -> new OrdType(OrdType.LIMIT);
+            default -> throw new IllegalArgumentException(String.format("[%s] is not a valid Order Type", rawOrderType));
+        };
     }
 }
