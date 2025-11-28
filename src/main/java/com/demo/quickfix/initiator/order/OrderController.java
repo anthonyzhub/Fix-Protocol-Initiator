@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderService orderService;
+  private final OrderService orderService;
 
-    @PostMapping("/create-order")
-    public void createOrder(@NonNull @RequestBody OrderDTO orderDTO) {
-        orderService.createOrder(orderDTO);
-    }
+  @PostMapping("/create-order")
+  public void createOrder(@NonNull @RequestBody OrderDTO orderDTO) {
+    orderService.createOrder(orderDTO);
+  }
 }
